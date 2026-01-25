@@ -7,7 +7,8 @@ const UI = {
     currentTab: 'zodiac',
     currentMode: 'reference', // 'reference' or 'tracking'
     selectedJob: null,
-    expandedStages: new Set()
+    expandedStages: new Set(),
+    includeOptional: false // 是否計算可選詩學項目
   },
 
   // Initialize UI
@@ -27,6 +28,9 @@ const UI = {
     }
     if (settings.currentMode) {
       this.state.currentMode = settings.currentMode;
+    }
+    if (settings.includeOptional !== undefined) {
+      this.state.includeOptional = settings.includeOptional;
     }
   },
 
@@ -126,7 +130,8 @@ const UI = {
 
     // Collect all materials with hierarchy preserved
     const allMaterials = [];
-    let totalTomestone = 0;
+    let requiredTomestone = 0;  // 必需的詩學
+    let optionalTomestone = 0;  // 可選的詩學（有其他獲取方式）
     let totalMilitary = 0;
 
     // Helper to parse military seals from source string
@@ -147,7 +152,14 @@ const UI = {
         const qty = mat.quantity * multiplier;
         const tom = (mat.tomestone || 0) * multiplier;
         const mil = parseMilitary(mat.source, qty);
-        totalTomestone += tom;
+        const isOptional = mat.optional === true;
+
+        // Separate required vs optional tomestone
+        if (isOptional) {
+          optionalTomestone += tom;
+        } else {
+          requiredTomestone += tom;
+        }
         totalMilitary += mil;
 
         const item = {
@@ -157,6 +169,7 @@ const UI = {
           sourceType: this.getSourceType(mat.source || ''),
           tomestone: tom,
           military: mil,
+          optional: isOptional,
           note: mat.note || '',
           subMaterials: []
         };
@@ -169,8 +182,15 @@ const UI = {
             const subQty = sub.quantity;
             const subTom = (sub.tomestone || 0) * sub.quantity;
             const subMil = parseMilitary(sub.source, subQty);
-            totalTomestone += subTom;
+            const subOptional = sub.optional === true;
+
+            if (subOptional) {
+              optionalTomestone += subTom;
+            } else {
+              requiredTomestone += subTom;
+            }
             totalMilitary += subMil;
+
             item.subMaterials.push({
               name: sub.name,
               quantity: subQty,
@@ -178,6 +198,7 @@ const UI = {
               sourceType: this.getSourceType(sub.source || ''),
               tomestone: subTom,
               military: subMil,
+              optional: subOptional,
               note: sub.note || ''
             });
           });
@@ -251,16 +272,39 @@ const UI = {
       `;
     };
 
+    // Calculate displayed totals based on toggle
+    const includeOptional = this.state.includeOptional;
+    const displayedTomestone = includeOptional
+      ? requiredTomestone + optionalTomestone
+      : requiredTomestone;
+    const hasOptional = optionalTomestone > 0;
+
     return `
       <details class="material-summary-compact" open>
         <summary class="summary-header">
           <span class="summary-title-text">材料總覽</span>
           <span class="summary-totals">
-            ${totalTomestone > 0 ? `<span class="summary-tomestone">${this.getSourceIcon('tomestone')} 詩學: ${totalTomestone.toLocaleString()}</span>` : ''}
+            ${displayedTomestone > 0 || hasOptional ? `
+              <span class="summary-tomestone">
+                ${this.getSourceIcon('tomestone')} 詩學: ${displayedTomestone.toLocaleString()}
+                ${hasOptional && !includeOptional ? `<span class="optional-hint">（+${optionalTomestone.toLocaleString()} 可選）</span>` : ''}
+              </span>
+            ` : ''}
             ${totalMilitary > 0 ? `<span class="summary-military">${this.getSourceIcon('military')} 軍票: ${totalMilitary.toLocaleString()}</span>` : ''}
           </span>
           <span class="summary-count">${totalCount} 種材料</span>
         </summary>
+        ${hasOptional ? `
+          <div class="summary-options">
+            <label class="option-toggle">
+              <input type="checkbox"
+                     ${includeOptional ? 'checked' : ''}
+                     onchange="UI.toggleOptionalTomestone()">
+              <span>計算可用其他方式獲得的詩學項目</span>
+              <span class="option-hint">（如每週任務、刷副本可免費獲得的材料）</span>
+            </label>
+          </div>
+        ` : ''}
         <div class="summary-table">
           ${allMaterials.map(mat => {
             const hasChildren = mat.subMaterials.length > 0;
@@ -407,6 +451,14 @@ const UI = {
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.classList.toggle('active', btn.textContent.includes(mode === 'reference' ? '參考' : '追蹤'));
     });
+  },
+
+  // Toggle optional tomestone calculation
+  toggleOptionalTomestone() {
+    this.state.includeOptional = !this.state.includeOptional;
+    Storage.saveSettings({ includeOptional: this.state.includeOptional });
+    // Re-render current content to update totals
+    this.renderContent(this.state.currentTab);
   },
 
   // Render reference view - all stages expanded, no job selection needed
