@@ -256,9 +256,9 @@ const UI = {
     const s = source.toLowerCase();
     if (s.includes('詩學')) return `${this.getSourceIcon('tomestone')}詩學`;
     if (s.includes('天道')) return `${this.getSourceIcon('tomestone')}天道`;
-    if (s.includes('博茲雅')) return '博茲雅';
+    if (s.includes('博茲雅')) return `${this.getSourceIcon('fate')}博茲雅`;
     if (s.includes('優雷卡') || s.includes('eureka')) return '優雷卡';
-    if (s.includes('扎杜諾爾')) return '扎杜諾爾';
+    if (s.includes('扎杜諾爾')) return `${this.getSourceIcon('fate')}扎杜諾爾`;
     if (s.includes('fate')) return `${this.getSourceIcon('fate')}FATE`;
     if (s.includes('24人') || s.includes('raid') || s.includes('歐米茄')) return `${this.getSourceIcon('raid')}24人本`;
     if (s.includes('副本')) return `${this.getSourceIcon('dungeon')}副本`;
@@ -269,7 +269,7 @@ const UI = {
     if (s.includes('同盟徽章')) return `${this.getSourceIcon('allied')}同盟徽章`;
     if (s.includes('雜用商人') || s.includes('100000g')) return `${this.getSourceIcon('gil')}金幣`;
     if (s.includes('寶石') || s.includes('雙色')) return `${this.getSourceIcon('bicolor')}寶石`;
-    if (s.includes('nm') || s.includes('掉落')) return 'NM';
+    if (s.includes('nm') || s.includes('掉落')) return `${this.getSourceIcon('fate')}NM`;
     // Fallback: first part before /
     const parts = source.split('/');
     return parts[0].substring(0, 10);
