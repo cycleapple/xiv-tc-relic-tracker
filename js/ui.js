@@ -128,22 +128,29 @@ const UI = {
     const materialMap = new Map();
 
     // Helper to add materials to map
-    const addMaterials = (materials) => {
+    const addMaterials = (materials, multiplier = 1) => {
       if (!Array.isArray(materials)) return;
       materials.forEach(mat => {
         const key = mat.name;
+        const qty = mat.quantity * multiplier;
+        const tom = (mat.tomestone || 0) * multiplier;
         if (materialMap.has(key)) {
           const existing = materialMap.get(key);
-          existing.quantity += mat.quantity;
+          existing.quantity += qty;
+          existing.tomestone += tom;
         } else {
           materialMap.set(key, {
             name: mat.name,
-            quantity: mat.quantity,
+            quantity: qty,
             source: mat.source || '',
             sourceType: this.getSourceType(mat.source || ''),
-            tomestone: mat.tomestone || 0,
+            tomestone: tom,
             note: mat.note || ''
           });
+        }
+        // Also add sub-materials if present
+        if (mat.subMaterials && Array.isArray(mat.subMaterials)) {
+          addMaterials(mat.subMaterials, mat.quantity * multiplier);
         }
       });
     };

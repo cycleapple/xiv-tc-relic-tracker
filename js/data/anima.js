@@ -66,28 +66,44 @@ const ANIMA_DATA = {
           name: '附魔橡膠',
           quantity: 4,
           source: '合成',
-          note: '需要：神秘骨片×10（詩學兌換）+ 精金投斧×4（軍票5000/製作/市場）'
+          note: '需要：神秘骨片×10（詩學兌換）+ 精金投斧×4（軍票5000/製作/市場）',
+          subMaterials: [
+            { id: 'unidentified_bone', name: '神秘骨片', quantity: 10, source: '詩學 150', tomestone: 150 },
+            { id: 'adamantite_francesca', name: '精金投斧', quantity: 4, source: '軍票 5000/製作/市場' }
+          ]
         },
         {
           id: 'fast_drying_carboncoat',
           name: '亞拉戈上級硬化藥',
           quantity: 4,
           source: '合成',
-          note: '需要：神秘貝殼×10（詩學兌換）+ 鈦合金鏡×4（軍票5000/製作/市場）'
+          note: '需要：神秘貝殼×10（詩學兌換）+ 鈦合金鏡×4（軍票5000/製作/市場）',
+          subMaterials: [
+            { id: 'unidentified_shell', name: '神秘貝殼', quantity: 10, source: '詩學 150', tomestone: 150 },
+            { id: 'titanium_alloy_mirror', name: '鈦合金鏡', quantity: 4, source: '軍票 5000/製作/市場' }
+          ]
         },
         {
           id: 'fast_acting_allagan_catalyst',
           name: '亞拉戈上級魔觸媒',
           quantity: 4,
           source: '合成',
-          note: '需要：神秘種子×10（詩學兌換）+ 國王餅×4（軍票5000/製作/市場）'
+          note: '需要：神秘種子×10（詩學兌換）+ 國王餅×4（軍票5000/製作/市場）',
+          subMaterials: [
+            { id: 'unidentified_seeds', name: '神秘種子', quantity: 10, source: '詩學 150', tomestone: 150 },
+            { id: 'kingcake', name: '國王餅', quantity: 4, source: '軍票 5000/製作/市場' }
+          ]
         },
         {
           id: 'holy_water',
           name: '神聖水',
           quantity: 4,
           source: '合成',
-          note: '需要：神秘原石×10（詩學兌換）+ 破魔箭×4（軍票5000/製作/市場）'
+          note: '需要：神秘原石×10（詩學兌換）+ 破魔箭×4（軍票5000/製作/市場）',
+          subMaterials: [
+            { id: 'unidentified_ore', name: '神秘原石', quantity: 10, source: '詩學 150', tomestone: 150 },
+            { id: 'dispelling_arrow', name: '破魔箭', quantity: 4, source: '軍票 5000/製作/市場' }
+          ]
         }
       ]
     },
