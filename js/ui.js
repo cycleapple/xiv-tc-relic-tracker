@@ -162,10 +162,12 @@ const UI = {
         };
 
         // Process sub-materials
+        // Note: sub-material quantity is TOTAL for the parent item, not per-parent
+        // So we DON'T multiply by qty, just use sub.quantity directly
         if (mat.subMaterials && Array.isArray(mat.subMaterials)) {
           mat.subMaterials.forEach(sub => {
-            const subQty = sub.quantity * qty;
-            const subTom = (sub.tomestone || 0) * qty;
+            const subQty = sub.quantity;
+            const subTom = (sub.tomestone || 0) * sub.quantity;
             const subMil = parseMilitary(sub.source, subQty);
             totalTomestone += subTom;
             totalMilitary += subMil;
