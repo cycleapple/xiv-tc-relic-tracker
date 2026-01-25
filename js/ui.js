@@ -39,8 +39,7 @@ const UI = {
       { id: 'eureka', name: '優武', version: '4.0' },
       { id: 'resistance', name: '義武', version: '5.0' },
       { id: 'manderville', name: '曼武', version: '6.0' },
-      { id: 'aetherial', name: '幻武', version: '7.0' },
-      { id: 'skysteel', name: '天鋼工具', version: '5.0' }
+      { id: 'aetherial', name: '幻武', version: '7.0' }
     ];
 
     tabNav.innerHTML = relics.map(relic => `
