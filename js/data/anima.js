@@ -176,10 +176,10 @@ const ANIMA_DATA = {
           id: 'pneumite',
           name: '晶化氣體',
           quantity: 15,
-          source: '詩學 100×15/軍票 4000/A9s',
+          source: '詩學 100×15/A9s',
           tomestone: 1500,
           optional: true,
-          note: '⭐ 推薦刷副本免費獲得\n詩學兌換：100×15 = 1,500\n軍票兌換：4000×15 = 60,000\n推薦A9s（亞歷山大零式機神城 天動之章 1）'
+          note: '⭐ 推薦刷副本免費獲得\n詩學兌換：100×15 = 1,500\n軍票兌換：4000×15 = 60,000（不推薦）\n推薦A9s（亞歷山大零式機神城 天動之章 1）'
         },
         {
           id: 'light_farming',

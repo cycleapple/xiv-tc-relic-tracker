@@ -132,7 +132,8 @@ const UI = {
     const allMaterials = [];
     let requiredTomestone = 0;  // 必需的詩學
     let optionalTomestone = 0;  // 可選的詩學（有其他獲取方式）
-    let totalMilitary = 0;
+    let requiredMilitary = 0;   // 必需的軍票
+    let optionalMilitary = 0;   // 可選的軍票（有其他獲取方式）
 
     // Helper to parse military seals from source string
     const parseMilitary = (source, quantity) => {
@@ -154,13 +155,14 @@ const UI = {
         const mil = parseMilitary(mat.source, qty);
         const isOptional = mat.optional === true;
 
-        // Separate required vs optional tomestone
+        // Separate required vs optional tomestone and military
         if (isOptional) {
           optionalTomestone += tom;
+          optionalMilitary += mil;
         } else {
           requiredTomestone += tom;
+          requiredMilitary += mil;
         }
-        totalMilitary += mil;
 
         const item = {
           name: mat.name,
@@ -186,10 +188,11 @@ const UI = {
 
             if (subOptional) {
               optionalTomestone += subTom;
+              optionalMilitary += subMil;
             } else {
               requiredTomestone += subTom;
+              requiredMilitary += subMil;
             }
-            totalMilitary += subMil;
 
             item.subMaterials.push({
               name: sub.name,
@@ -277,7 +280,11 @@ const UI = {
     const displayedTomestone = includeOptional
       ? requiredTomestone + optionalTomestone
       : requiredTomestone;
-    const hasOptional = optionalTomestone > 0;
+    const displayedMilitary = includeOptional
+      ? requiredMilitary + optionalMilitary
+      : requiredMilitary;
+    const hasOptional = optionalTomestone > 0 || optionalMilitary > 0;
+    const hasOptionalMilitary = optionalMilitary > 0;
 
     return `
       <details class="material-summary-compact" open>
@@ -287,10 +294,15 @@ const UI = {
             ${displayedTomestone > 0 || hasOptional ? `
               <span class="summary-tomestone">
                 ${this.getSourceIcon('tomestone')} 詩學: ${displayedTomestone.toLocaleString()}
-                ${hasOptional && !includeOptional ? `<span class="optional-hint">（+${optionalTomestone.toLocaleString()} 可選）</span>` : ''}
+                ${hasOptional && !includeOptional && optionalTomestone > 0 ? `<span class="optional-hint">（+${optionalTomestone.toLocaleString()} 可選）</span>` : ''}
               </span>
             ` : ''}
-            ${totalMilitary > 0 ? `<span class="summary-military">${this.getSourceIcon('military')} 軍票: ${totalMilitary.toLocaleString()}</span>` : ''}
+            ${displayedMilitary > 0 || hasOptionalMilitary ? `
+              <span class="summary-military">
+                ${this.getSourceIcon('military')} 軍票: ${displayedMilitary.toLocaleString()}
+                ${hasOptionalMilitary && !includeOptional ? `<span class="optional-hint">（+${optionalMilitary.toLocaleString()} 可選）</span>` : ''}
+              </span>
+            ` : ''}
           </span>
           <span class="summary-count">${totalCount} 種材料</span>
         </summary>
