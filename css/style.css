@@ -331,6 +331,7 @@ a:hover {
 .summary-row.source-allied { border-left-color: #64a064; }
 .summary-row.source-gil { border-left-color: #c8b464; }
 .summary-row.source-bicolor { border-left-color: #78b4c8; }
+.summary-row.source-market { border-left-color: #c8a064; }
 
 .summary-name {
   font-weight: 500;
@@ -684,6 +685,11 @@ a:hover {
 .source-badge.bicolor {
   background: rgba(120, 180, 200, 0.2);
   color: #78b4c8;
+}
+
+.source-badge.market {
+  background: rgba(200, 160, 100, 0.2);
+  color: #c8a064;
 }
 
 .source-badge.npc {

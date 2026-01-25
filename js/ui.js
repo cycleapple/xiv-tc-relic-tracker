@@ -235,7 +235,9 @@ const UI = {
     fate: 'https://xivapi.com/i/061000/061809.png',
     bicolor: 'https://xivapi.com/i/065000/065071.png',
     dungeon: 'https://xivapi.com/i/061000/061801.png',
-    raid: 'https://xivapi.com/i/061000/061802.png'
+    raid: 'https://xivapi.com/i/061000/061802.png',
+    market: 'https://xivapi.com/i/060000/060993.png',
+    craft: 'https://xivapi.com/i/060000/060434.png'
   },
 
   // Get icon img tag
@@ -260,7 +262,8 @@ const UI = {
     if (s.includes('fate')) return `${this.getSourceIcon('fate')}FATE`;
     if (s.includes('24人') || s.includes('raid') || s.includes('歐米茄')) return `${this.getSourceIcon('raid')}24人本`;
     if (s.includes('副本')) return `${this.getSourceIcon('dungeon')}副本`;
-    if (s.includes('製作')) return '製作';
+    if (s.includes('製作')) return `${this.getSourceIcon('craft')}製作`;
+    if (s.includes('市場') || s.includes('購買')) return `${this.getSourceIcon('market')}市場`;
     if (s.includes('採集') || s.includes('採礦') || s.includes('伐木')) return '採集';
     if (s.includes('軍票')) return `${this.getSourceIcon('military')}軍票`;
     if (s.includes('同盟徽章')) return `${this.getSourceIcon('allied')}同盟徽章`;
@@ -567,6 +570,7 @@ const UI = {
     if (s.includes('博茲雅') || s.includes('bozja') || s.includes('扎杜諾爾')) return 'bozja';
     if (s.includes('優雷卡') || s.includes('eureka')) return 'eureka';
     if (s.includes('寶石') || s.includes('雙色')) return 'bicolor';
+    if (s.includes('市場') || s.includes('購買')) return 'market';
     if (s.includes('製作') || s.includes('craft')) return 'craft';
     if (s.includes('採集') || s.includes('gather')) return 'gather';
     return 'dungeon';
