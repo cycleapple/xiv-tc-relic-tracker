@@ -132,7 +132,8 @@ const UI = {
     const allMaterials = [];
     let requiredTomestone = 0;  // 必需的詩學
     let optionalTomestone = 0;  // 可選的詩學（有其他獲取方式）
-    let totalMilitary = 0;
+    let requiredMilitary = 0;   // 必需的軍票
+    let optionalMilitary = 0;   // 可選的軍票（有其他獲取方式）
 
     // Helper to parse military seals from source string
     const parseMilitary = (source, quantity) => {
@@ -151,16 +152,18 @@ const UI = {
       materials.forEach(mat => {
         const qty = mat.quantity * multiplier;
         const tom = (mat.tomestone || 0) * multiplier;
-        const mil = parseMilitary(mat.source, qty);
+        // Use direct military value if exists, otherwise parse from source
+        const mil = mat.military ? (mat.military * multiplier) : parseMilitary(mat.source, qty);
         const isOptional = mat.optional === true;
 
-        // Separate required vs optional tomestone
+        // Separate required vs optional
         if (isOptional) {
           optionalTomestone += tom;
+          optionalMilitary += mil;
         } else {
           requiredTomestone += tom;
+          requiredMilitary += mil;
         }
-        totalMilitary += mil;
 
         const item = {
           name: mat.name,
@@ -181,15 +184,16 @@ const UI = {
           mat.subMaterials.forEach(sub => {
             const subQty = sub.quantity;
             const subTom = (sub.tomestone || 0) * sub.quantity;
-            const subMil = parseMilitary(sub.source, subQty);
+            const subMil = sub.military ? sub.military : parseMilitary(sub.source, subQty);
             const subOptional = sub.optional === true;
 
             if (subOptional) {
               optionalTomestone += subTom;
+              optionalMilitary += subMil;
             } else {
               requiredTomestone += subTom;
+              requiredMilitary += subMil;
             }
-            totalMilitary += subMil;
 
             item.subMaterials.push({
               name: sub.name,
@@ -277,20 +281,30 @@ const UI = {
     const displayedTomestone = includeOptional
       ? requiredTomestone + optionalTomestone
       : requiredTomestone;
-    const hasOptional = optionalTomestone > 0;
+    const displayedMilitary = includeOptional
+      ? requiredMilitary + optionalMilitary
+      : requiredMilitary;
+    const hasOptionalTom = optionalTomestone > 0;
+    const hasOptionalMil = optionalMilitary > 0;
+    const hasOptional = hasOptionalTom || hasOptionalMil;
 
     return `
       <details class="material-summary-compact" open>
         <summary class="summary-header">
           <span class="summary-title-text">材料總覽</span>
           <span class="summary-totals">
-            ${displayedTomestone > 0 || hasOptional ? `
+            ${displayedTomestone > 0 || hasOptionalTom ? `
               <span class="summary-tomestone">
                 ${this.getSourceIcon('tomestone')} 詩學: ${displayedTomestone.toLocaleString()}
-                ${hasOptional && !includeOptional ? `<span class="optional-hint">（+${optionalTomestone.toLocaleString()} 可選）</span>` : ''}
+                ${hasOptionalTom && !includeOptional ? `<span class="optional-hint">（+${optionalTomestone.toLocaleString()}）</span>` : ''}
               </span>
             ` : ''}
-            ${totalMilitary > 0 ? `<span class="summary-military">${this.getSourceIcon('military')} 軍票: ${totalMilitary.toLocaleString()}</span>` : ''}
+            ${displayedMilitary > 0 || hasOptionalMil ? `
+              <span class="summary-military">
+                ${this.getSourceIcon('military')} 軍票: ${displayedMilitary.toLocaleString()}
+                ${hasOptionalMil && !includeOptional ? `<span class="optional-hint">（+${optionalMilitary.toLocaleString()}）</span>` : ''}
+              </span>
+            ` : ''}
           </span>
           <span class="summary-count">${totalCount} 種材料</span>
         </summary>
@@ -300,8 +314,7 @@ const UI = {
               <input type="checkbox"
                      ${includeOptional ? 'checked' : ''}
                      onchange="UI.toggleOptionalTomestone()">
-              <span>計算可用其他方式獲得的詩學項目</span>
-              <span class="option-hint">（如每週任務、刷副本可免費獲得的材料）</span>
+              <span>計算可選項目（有其他免費獲取方式）</span>
             </label>
           </div>
         ` : ''}
