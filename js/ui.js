@@ -226,25 +226,47 @@ const UI = {
     `;
   },
 
+  // Source icon URLs from XIVAPI
+  sourceIcons: {
+    tomestone: 'https://xivapi.com/i/065000/065023.png',
+    military: 'https://xivapi.com/i/065000/065006.png',
+    allied: 'https://xivapi.com/i/065000/065024.png',
+    gil: 'https://xivapi.com/i/065000/065002.png',
+    fate: 'https://xivapi.com/i/061000/061809.png',
+    bicolor: 'https://xivapi.com/i/065000/065071.png',
+    dungeon: 'https://xivapi.com/i/061000/061801.png',
+    raid: 'https://xivapi.com/i/061000/061802.png'
+  },
+
+  // Get icon img tag
+  getSourceIcon(type) {
+    const url = this.sourceIcons[type];
+    if (url) {
+      return `<img class="source-icon" src="${url}" alt="${type}">`;
+    }
+    return '';
+  },
+
   // Get short source text for summary with icon
   getShortSource(source) {
     if (!source) return '-';
     // Extract the main source type with icon
     const s = source.toLowerCase();
-    if (s.includes('詩學')) return '💎詩學';
-    if (s.includes('天道')) return '💎天道';
-    if (s.includes('博茲雅')) return '⚔️博茲雅';
-    if (s.includes('優雷卡') || s.includes('eureka')) return '🌋優雷卡';
-    if (s.includes('扎杜諾爾')) return '⚔️扎杜諾爾';
-    if (s.includes('fate')) return '⚡FATE';
-    if (s.includes('24人') || s.includes('raid')) return '👥24人本';
-    if (s.includes('副本')) return '🏰副本';
-    if (s.includes('製作')) return '🔨製作';
-    if (s.includes('採集') || s.includes('採礦') || s.includes('伐木')) return '⛏️採集';
-    if (s.includes('軍票')) return '🎖️軍票';
-    if (s.includes('金幣')) return '💰金幣';
-    if (s.includes('寶石')) return '💠寶石';
-    if (s.includes('nm') || s.includes('掉落')) return '👹NM';
+    if (s.includes('詩學')) return `${this.getSourceIcon('tomestone')}詩學`;
+    if (s.includes('天道')) return `${this.getSourceIcon('tomestone')}天道`;
+    if (s.includes('博茲雅')) return '博茲雅';
+    if (s.includes('優雷卡') || s.includes('eureka')) return '優雷卡';
+    if (s.includes('扎杜諾爾')) return '扎杜諾爾';
+    if (s.includes('fate')) return `${this.getSourceIcon('fate')}FATE`;
+    if (s.includes('24人') || s.includes('raid') || s.includes('歐米茄')) return `${this.getSourceIcon('raid')}24人本`;
+    if (s.includes('副本')) return `${this.getSourceIcon('dungeon')}副本`;
+    if (s.includes('製作')) return '製作';
+    if (s.includes('採集') || s.includes('採礦') || s.includes('伐木')) return '採集';
+    if (s.includes('軍票')) return `${this.getSourceIcon('military')}軍票`;
+    if (s.includes('同盟徽章')) return `${this.getSourceIcon('allied')}同盟徽章`;
+    if (s.includes('雜用商人') || s.includes('100000g')) return `${this.getSourceIcon('gil')}金幣`;
+    if (s.includes('寶石') || s.includes('雙色')) return `${this.getSourceIcon('bicolor')}寶石`;
+    if (s.includes('nm') || s.includes('掉落')) return 'NM';
     // Fallback: first part before /
     const parts = source.split('/');
     return parts[0].substring(0, 10);
@@ -536,11 +558,15 @@ const UI = {
   getSourceType(source) {
     const s = source.toLowerCase();
     if (s.includes('詩學') || s.includes('tomestone')) return 'tomestone';
+    if (s.includes('軍票')) return 'military';
+    if (s.includes('同盟徽章')) return 'allied';
+    if (s.includes('雜用商人') || s.includes('100000g')) return 'gil';
     if (s.includes('fate')) return 'fate';
-    if (s.includes('24人') || s.includes('raid')) return 'raid';
+    if (s.includes('24人') || s.includes('raid') || s.includes('歐米茄')) return 'raid';
     if (s.includes('副本') || s.includes('dungeon') || s.includes('級')) return 'dungeon';
     if (s.includes('博茲雅') || s.includes('bozja') || s.includes('扎杜諾爾')) return 'bozja';
     if (s.includes('優雷卡') || s.includes('eureka')) return 'eureka';
+    if (s.includes('寶石') || s.includes('雙色')) return 'bicolor';
     if (s.includes('製作') || s.includes('craft')) return 'craft';
     if (s.includes('採集') || s.includes('gather')) return 'gather';
     return 'dungeon';
@@ -558,19 +584,8 @@ const UI = {
       if (!trimmed) return;
 
       const type = this.getSourceType(trimmed);
-      let icon = '';
-
-      switch(type) {
-        case 'tomestone': icon = '💎'; break;
-        case 'fate': icon = '⚡'; break;
-        case 'dungeon': icon = '🏰'; break;
-        case 'raid': icon = '👥'; break;
-        case 'bozja': icon = '⚔️'; break;
-        case 'eureka': icon = '🌋'; break;
-        case 'craft': icon = '🔨'; break;
-        case 'gather': icon = '⛏️'; break;
-        default: icon = '📍';
-      }
+      const iconUrl = this.sourceIcons[type];
+      const icon = iconUrl ? `<img class="source-icon" src="${iconUrl}" alt="${type}">` : '';
 
       badges.push(`<span class="source-badge ${type}">${icon} ${trimmed}</span>`);
     });
