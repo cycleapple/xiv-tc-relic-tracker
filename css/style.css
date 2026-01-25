@@ -114,32 +114,90 @@ a:hover {
   margin-bottom: 1rem;
 }
 
-.header-links {
+/* Header Buttons */
+.header-buttons {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
-.header-link {
+.header-data-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* === Buttons (通用按鈕樣式) === */
+.btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
+  border-radius: 6px;
   font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  font-family: inherit;
 }
 
-.header-link:hover {
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
   background: var(--bg-card-hover);
   border-color: var(--accent-color);
-  text-decoration: none;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  color: var(--text-primary);
+}
+
+.btn-discord {
+  background: #5865F2;
+  color: #fff;
+}
+
+.btn-discord:hover {
+  background: #4752c4;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.btn-support {
+  background: var(--accent-gold);
+  color: var(--text-primary);
+}
+
+.btn-support:hover {
+  background: #a68d5f;
+  transform: translateY(-2px);
+  color: var(--text-primary);
+}
+
+.btn-data {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-data:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
 /* === Main Container === */
