@@ -156,15 +156,39 @@ const ANIMA_DATA = {
           id: 'singing_cluster',
           name: '活性化晶簇',
           quantity: 50,
-          source: '每週/每日任務',
-          note: '任務「安費莉絲的委託」（田園）：每週給18個\n任務「安格萊特的委託」（田園）：每天給1個'
-        },
+          source: '詩學 40×50/每週任務',
+          tomestone: 2000,
+          note: '詩學兌換：40×50 = 2,000\n任務「安費莉絲的委託」（田園）：每週給18個\n任務「安格萊特的委託」（田園）：每天給1個'
+        }
+      ]
+    },
+    {
+      id: 'bloom',
+      name: '元靈+5.5 終綻',
+      ilvl: 270,
+      quest: '人造元靈終綻放',
+      materials: [
         {
           id: 'pneumite',
           name: '晶化氣體',
           quantity: 15,
-          source: 'A9s/詩學 100/軍票 4000',
-          note: '推薦A9s（亞歷山大零式機神城 天動之章 1）\n高火力推薦A10s\n如果能湊夠90級以上的7~8人或100級以上2~3人，亦可考慮天動之章 2\n其他獲取：詩學 100、軍票 4000、挖寶G6/G8'
+          source: '詩學 100×15/軍票 4000/A9s',
+          tomestone: 1500,
+          note: '詩學兌換：100×15 = 1,500\n軍票兌換：4000×15 = 60,000\n推薦A9s（亞歷山大零式機神城 天動之章 1）\n高火力推薦A10s'
+        },
+        {
+          id: 'light_farming',
+          name: '刷光（以太凝聚度）',
+          quantity: 2000,
+          source: '副本刷光',
+          note: '需累積2000點以太凝聚度'
+        },
+        {
+          id: 'dungeon_3',
+          name: '完成3個迷宮',
+          quantity: 1,
+          source: '副本',
+          note: '完成指定的3個副本'
         }
       ]
     },
@@ -173,7 +197,6 @@ const ANIMA_DATA = {
       name: '元靈+6 光輝',
       ilvl: 275,
       quest: '誕生的瞬間',
-      description: '刷光並收集密度',
       materials: [
         {
           id: 'archaic_ink',
@@ -183,7 +206,13 @@ const ANIMA_DATA = {
           tomestone: 500,
           note: '未接任務無法兌換'
         },
-        { id: 'light', name: '刷光', quantity: 1, source: '副本刷光' }
+        {
+          id: 'primal_battles',
+          name: '蠻神討伐',
+          quantity: 12,
+          source: '蠻神戰',
+          note: '完成12場指定蠻神討伐戰'
+        }
       ]
     }
   ]
