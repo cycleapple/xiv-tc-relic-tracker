@@ -260,30 +260,76 @@ const UI = {
     return '';
   },
 
-  // Get short source text for summary with icon
+  // Get short source text for summary with icon (supports multiple sources)
   getShortSource(source) {
     if (!source) return '-';
-    // Extract the main source type with icon
-    const s = source.toLowerCase();
-    if (s.includes('詩學')) return `${this.getSourceIcon('tomestone')}詩學`;
-    if (s.includes('天道')) return `${this.getSourceIcon('tomestone')}天道`;
-    if (s.includes('博茲雅')) return `${this.getSourceIcon('fate')}博茲雅`;
-    if (s.includes('優雷卡') || s.includes('eureka')) return '優雷卡';
-    if (s.includes('扎杜諾爾')) return `${this.getSourceIcon('fate')}扎杜諾爾`;
-    if (s.includes('fate')) return `${this.getSourceIcon('fate')}FATE`;
-    if (s.includes('24人') || s.includes('raid') || s.includes('歐米茄')) return `${this.getSourceIcon('raid')}24人本`;
-    if (s.includes('副本')) return `${this.getSourceIcon('dungeon')}副本`;
-    if (s.includes('製作')) return `${this.getSourceIcon('craft')}製作`;
-    if (s.includes('市場') || s.includes('購買')) return `${this.getSourceIcon('market')}市場`;
-    if (s.includes('採集') || s.includes('採礦') || s.includes('伐木')) return '採集';
-    if (s.includes('軍票')) return `${this.getSourceIcon('military')}軍票`;
-    if (s.includes('同盟徽章')) return `${this.getSourceIcon('allied')}同盟徽章`;
-    if (s.includes('雜用商人') || s.includes('100000g')) return `${this.getSourceIcon('gil')}金幣`;
-    if (s.includes('寶石') || s.includes('雙色')) return `${this.getSourceIcon('bicolor')}寶石`;
-    if (s.includes('nm') || s.includes('掉落')) return `${this.getSourceIcon('fate')}NM`;
-    // Fallback: first part before /
-    const parts = source.split('/');
-    return parts[0].substring(0, 10);
+
+    // Split by common delimiters
+    const parts = source.split(/[\/、]/);
+    const results = [];
+
+    parts.forEach(part => {
+      const trimmed = part.trim();
+      if (!trimmed) return;
+
+      const s = trimmed.toLowerCase();
+      let result = null;
+
+      // Match source type and get icon + short label
+      if (s.includes('詩學')) {
+        result = `${this.getSourceIcon('tomestone')}詩學`;
+      } else if (s.includes('天道')) {
+        result = `${this.getSourceIcon('tomestone')}天道`;
+      } else if (s.includes('博茲雅')) {
+        result = `${this.getSourceIcon('fate')}博茲雅`;
+      } else if (s.includes('扎杜諾爾')) {
+        result = `${this.getSourceIcon('fate')}扎杜諾爾`;
+      } else if (s.includes('優雷卡') || s.includes('eureka')) {
+        result = `${this.getSourceIcon('fate')}優雷卡`;
+      } else if (s.includes('新月島')) {
+        result = `${this.getSourceIcon('fate')}新月島`;
+      } else if (s.match(/a\d+s/) || s.includes('亞歷山大') || s.includes('歐米茄') || s.includes('伊甸')) {
+        result = `${this.getSourceIcon('raid')}8人本`;
+      } else if (s.includes('24人')) {
+        result = `${this.getSourceIcon('raid')}24人本`;
+      } else if (s.includes('ba') || s.includes('女王古殿') || s.includes('死宮')) {
+        result = `${this.getSourceIcon('raid')}特殊副本`;
+      } else if (s.includes('fate')) {
+        result = `${this.getSourceIcon('fate')}FATE`;
+      } else if (s.includes('nm') || s.includes('掉落') || s.includes('ce')) {
+        result = `${this.getSourceIcon('fate')}NM`;
+      } else if (s.includes('副本') || s.match(/\d+級/)) {
+        result = `${this.getSourceIcon('dungeon')}副本`;
+      } else if (s.includes('製作') || s.includes('合成')) {
+        result = `${this.getSourceIcon('craft')}製作`;
+      } else if (s.includes('市場') || s.includes('購買')) {
+        result = `${this.getSourceIcon('market')}市場`;
+      } else if (s.includes('軍票')) {
+        result = `${this.getSourceIcon('military')}軍票`;
+      } else if (s.includes('同盟徽章')) {
+        result = `${this.getSourceIcon('allied')}同盟徽章`;
+      } else if (s.includes('雜用商人') || s.includes('金幣') || s.match(/\d+g/)) {
+        result = `${this.getSourceIcon('gil')}金幣`;
+      } else if (s.includes('寶石') || s.includes('雙色')) {
+        result = `${this.getSourceIcon('bicolor')}寶石`;
+      } else if (s.includes('挖寶') || s.includes('地圖')) {
+        result = `${this.getSourceIcon('fate')}挖寶`;
+      } else if (s.includes('兌換')) {
+        result = `${this.getSourceIcon('tomestone')}兌換`;
+      } else if (s.includes('古武')) {
+        result = `${this.getSourceIcon('dungeon')}古武`;
+      } else {
+        // Fallback: use first 6 chars
+        result = trimmed.substring(0, 6);
+      }
+
+      // Avoid duplicates
+      if (result && !results.includes(result)) {
+        results.push(result);
+      }
+    });
+
+    return results.length > 0 ? results.join(' ') : '-';
   },
 
   // Render mode toggle

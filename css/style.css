@@ -312,7 +312,7 @@ a:hover {
 
 .summary-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr 60px minmax(80px, auto);
   gap: var(--spacing-sm);
   padding: var(--spacing-xs) var(--spacing-sm);
   background: var(--bg-card);
@@ -367,9 +367,19 @@ a:hover {
 .summary-source {
   color: var(--text-muted);
   font-size: 0.75rem;
-  white-space: nowrap;
-  min-width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 80px;
+  max-width: 180px;
   text-align: right;
+}
+
+.summary-source .source-icon {
+  width: 14px;
+  height: 14px;
 }
 
 /* Tooltip for summary rows */
