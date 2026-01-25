@@ -335,6 +335,8 @@ const UI = {
         result = `${this.getSourceIcon('bicolor')}寶石`;
       } else if (s.includes('挖寶') || s.includes('地圖')) {
         result = `${this.getSourceIcon('fate')}挖寶`;
+      } else if (s.includes('水晶') && s.includes('兌換')) {
+        result = `${this.getSourceIcon('fate')}水晶兌換`;
       } else if (s.includes('兌換')) {
         result = `${this.getSourceIcon('tomestone')}兌換`;
       } else if (s.includes('古武')) {
