@@ -216,7 +216,7 @@ const UI = {
     allMaterials.forEach(m => { totalCount += m.subMaterials.length; });
 
     // Render a single material row
-    const renderRow = (mat, isSubMaterial = false) => {
+    const renderRow = (mat, isSubMaterial = false, hasChildren = false) => {
       let tooltipParts = [];
       if (mat.tomestone) tooltipParts.push(`詩學消耗: ${mat.tomestone}`);
       if (mat.source) tooltipParts.push(`來源: ${mat.source}`);
@@ -224,8 +224,16 @@ const UI = {
       const hasTooltip = tooltipParts.length > 0;
       const tooltipText = tooltipParts.join('&#10;').replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
 
+      const classes = [
+        'summary-row',
+        `source-${mat.sourceType}`,
+        isSubMaterial ? 'sub-material' : '',
+        hasChildren ? 'has-children' : '',
+        hasTooltip ? 'has-tooltip' : ''
+      ].filter(Boolean).join(' ');
+
       return `
-        <div class="summary-row source-${mat.sourceType} ${isSubMaterial ? 'sub-material' : ''} ${hasTooltip ? 'has-tooltip' : ''}"
+        <div class="${classes}"
              ${hasTooltip ? `data-tooltip="${tooltipText}"` : ''}>
           <span class="summary-name">${isSubMaterial ? '└ ' : ''}${mat.name}</span>
           <span class="summary-qty">×${mat.quantity}</span>
@@ -246,10 +254,11 @@ const UI = {
         </summary>
         <div class="summary-table">
           ${allMaterials.map(mat => {
-            let html = renderRow(mat, false);
+            const hasChildren = mat.subMaterials.length > 0;
+            let html = renderRow(mat, false, hasChildren);
             // Render sub-materials indented
-            if (mat.subMaterials.length > 0) {
-              html += mat.subMaterials.map(sub => renderRow(sub, true)).join('');
+            if (hasChildren) {
+              html += mat.subMaterials.map(sub => renderRow(sub, true, false)).join('');
             }
             return html;
           }).join('')}

@@ -357,6 +357,12 @@ a:hover {
 .summary-row.source-bicolor { border-left-color: #78b4c8; }
 .summary-row.source-market { border-left-color: #c8a064; }
 
+/* Materials with sub-materials span full width */
+.summary-row.has-children,
+.summary-row.sub-material {
+  grid-column: 1 / -1;
+}
+
 /* Sub-materials styling */
 .summary-row.sub-material {
   background: var(--bg-tertiary);
