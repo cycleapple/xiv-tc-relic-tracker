@@ -124,109 +124,114 @@ const UI = {
   renderMaterialSummary(data) {
     if (!data.stages) return '';
 
-    // Aggregate all materials, grouped by source type
-    const materialMap = new Map();
+    // Collect all materials with hierarchy preserved
+    const allMaterials = [];
+    let totalTomestone = 0;
 
-    // Helper to add materials to map
-    const addMaterials = (materials, multiplier = 1) => {
+    // Helper to collect materials
+    const collectMaterials = (materials, multiplier = 1) => {
       if (!Array.isArray(materials)) return;
       materials.forEach(mat => {
-        const key = mat.name;
         const qty = mat.quantity * multiplier;
         const tom = (mat.tomestone || 0) * multiplier;
-        if (materialMap.has(key)) {
-          const existing = materialMap.get(key);
-          existing.quantity += qty;
-          existing.tomestone += tom;
-        } else {
-          materialMap.set(key, {
-            name: mat.name,
-            quantity: qty,
-            source: mat.source || '',
-            sourceType: this.getSourceType(mat.source || ''),
-            tomestone: tom,
-            note: mat.note || ''
+        totalTomestone += tom;
+
+        const item = {
+          name: mat.name,
+          quantity: qty,
+          source: mat.source || '',
+          sourceType: this.getSourceType(mat.source || ''),
+          tomestone: tom,
+          note: mat.note || '',
+          subMaterials: []
+        };
+
+        // Process sub-materials
+        if (mat.subMaterials && Array.isArray(mat.subMaterials)) {
+          mat.subMaterials.forEach(sub => {
+            const subQty = sub.quantity * qty;
+            const subTom = (sub.tomestone || 0) * qty;
+            totalTomestone += subTom;
+            item.subMaterials.push({
+              name: sub.name,
+              quantity: subQty,
+              source: sub.source || '',
+              sourceType: this.getSourceType(sub.source || ''),
+              tomestone: subTom,
+              note: sub.note || ''
+            });
           });
         }
-        // Also add sub-materials if present
-        if (mat.subMaterials && Array.isArray(mat.subMaterials)) {
-          addMaterials(mat.subMaterials, mat.quantity * multiplier);
-        }
+
+        allMaterials.push(item);
       });
     };
 
     // Add stage materials
     data.stages.forEach(stage => {
       if (!stage.materials) return;
-
-      // Handle skysteel differently - use first job's materials as reference
       let materials = stage.materials;
       if (Array.isArray(stage.materials.crafters)) {
         materials = stage.materials.crafters[0]?.materials || [];
       }
-
-      addMaterials(materials);
+      collectMaterials(materials);
     });
 
     // Add prerequisite materials (for aetherial)
     if (data.prerequisiteMaterials) {
       data.prerequisiteMaterials.forEach(section => {
-        addMaterials(section.materials);
+        collectMaterials(section.materials);
       });
     }
 
     // Add shared materials
     if (data.sharedMaterials) {
       data.sharedMaterials.forEach(section => {
-        addMaterials(section.materials);
+        collectMaterials(section.materials);
       });
     }
 
-    if (materialMap.size === 0) return '';
+    if (allMaterials.length === 0) return '';
 
-    const materials = Array.from(materialMap.values());
+    // Count total unique materials (including sub-materials)
+    let totalCount = allMaterials.length;
+    allMaterials.forEach(m => { totalCount += m.subMaterials.length; });
 
-    // Group by source type for better organization
-    const grouped = {};
-    materials.forEach(mat => {
-      const type = mat.sourceType;
-      if (!grouped[type]) grouped[type] = [];
-      grouped[type].push(mat);
-    });
+    // Render a single material row
+    const renderRow = (mat, isSubMaterial = false) => {
+      let tooltipParts = [];
+      if (mat.tomestone) tooltipParts.push(`詩學消耗: ${mat.tomestone}`);
+      if (mat.source) tooltipParts.push(`來源: ${mat.source}`);
+      if (mat.note && mat.note.trim()) tooltipParts.push(mat.note.trim());
+      const hasTooltip = tooltipParts.length > 0;
+      const tooltipText = tooltipParts.join('&#10;').replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
 
-    // Calculate total tomestones
-    const totalTomestone = materials.reduce((sum, m) => sum + (m.tomestone || 0), 0);
+      return `
+        <div class="summary-row source-${mat.sourceType} ${isSubMaterial ? 'sub-material' : ''} ${hasTooltip ? 'has-tooltip' : ''}"
+             ${hasTooltip ? `data-tooltip="${tooltipText}"` : ''}>
+          <span class="summary-name">${isSubMaterial ? '└ ' : ''}${mat.name}</span>
+          <span class="summary-qty">×${mat.quantity}</span>
+          <span class="summary-source">${this.getShortSource(mat.source)}</span>
+        </div>
+      `;
+    };
 
     return `
       <details class="material-summary-compact" open>
         <summary class="summary-header">
-          <span class="summary-title-text">📋 材料總覽</span>
-          ${totalTomestone > 0 ? `<span class="summary-tomestone">💎 詩學總計: ${totalTomestone}</span>` : ''}
-          <span class="summary-count">${materials.length} 種材料</span>
+          <span class="summary-title-text">材料總覽</span>
+          ${totalTomestone > 0 ? `<span class="summary-tomestone">${this.getSourceIcon('tomestone')} 詩學總計: ${totalTomestone}</span>` : ''}
+          <span class="summary-count">${totalCount} 種材料</span>
         </summary>
         <div class="summary-table">
-          ${materials.map(mat => {
-            // Build tooltip with tomestone cost and note
-            let tooltipParts = [];
-            if (mat.tomestone) {
-              tooltipParts.push(`💎 詩學消耗: ${mat.tomestone}`);
+          ${allMaterials.map(mat => {
+            let html = renderRow(mat, false);
+            // Render sub-materials indented
+            if (mat.subMaterials.length > 0) {
+              html += mat.subMaterials.map(sub => renderRow(sub, true)).join('');
             }
-            if (mat.source) {
-              tooltipParts.push(`來源: ${mat.source}`);
-            }
-            if (mat.note && mat.note.trim()) {
-              tooltipParts.push(mat.note.trim());
-            }
-            const hasTooltip = tooltipParts.length > 0;
-            const tooltipText = tooltipParts.join('&#10;').replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
-            return `
-            <div class="summary-row source-${mat.sourceType} ${hasTooltip ? 'has-tooltip' : ''}"
-                 ${hasTooltip ? `data-tooltip="${tooltipText}"` : ''}>
-              <span class="summary-name">${mat.name}${hasTooltip ? ' ℹ️' : ''}</span>
-              <span class="summary-qty">×${mat.quantity}</span>
-              <span class="summary-source">${this.getShortSource(mat.source)}</span>
-            </div>
-          `}).join('')}
+            return html;
+          }).join('')}
         </div>
       </details>
     `;

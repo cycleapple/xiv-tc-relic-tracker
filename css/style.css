@@ -333,6 +333,19 @@ a:hover {
 .summary-row.source-bicolor { border-left-color: #78b4c8; }
 .summary-row.source-market { border-left-color: #c8a064; }
 
+/* Sub-materials styling */
+.summary-row.sub-material {
+  background: var(--bg-tertiary);
+  padding-left: var(--spacing-lg);
+  font-size: 0.8rem;
+  border-left-width: 2px;
+  opacity: 0.9;
+}
+
+.summary-row.sub-material .summary-name {
+  color: var(--text-secondary);
+}
+
 .summary-name {
   font-weight: 500;
   white-space: nowrap;
