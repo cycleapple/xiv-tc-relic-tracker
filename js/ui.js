@@ -211,6 +211,13 @@ const UI = {
 
     if (allMaterials.length === 0) return '';
 
+    // Sort: items with subMaterials (crafted items) go to the end
+    allMaterials.sort((a, b) => {
+      const aHasSub = a.subMaterials.length > 0 ? 1 : 0;
+      const bHasSub = b.subMaterials.length > 0 ? 1 : 0;
+      return aHasSub - bHasSub;
+    });
+
     // Count total unique materials (including sub-materials)
     let totalCount = allMaterials.length;
     allMaterials.forEach(m => { totalCount += m.subMaterials.length; });
