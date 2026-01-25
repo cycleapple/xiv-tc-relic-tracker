@@ -127,6 +127,18 @@ const UI = {
     // Collect all materials with hierarchy preserved
     const allMaterials = [];
     let totalTomestone = 0;
+    let totalMilitary = 0;
+
+    // Helper to parse military seals from source string
+    const parseMilitary = (source, quantity) => {
+      if (!source) return 0;
+      // Match patterns like "軍票 5000", "軍票5000", "軍票 20000×4"
+      const match = source.match(/軍票\s*(\d+)/);
+      if (match) {
+        return parseInt(match[1]) * quantity;
+      }
+      return 0;
+    };
 
     // Helper to collect materials
     const collectMaterials = (materials, multiplier = 1) => {
@@ -134,7 +146,9 @@ const UI = {
       materials.forEach(mat => {
         const qty = mat.quantity * multiplier;
         const tom = (mat.tomestone || 0) * multiplier;
+        const mil = parseMilitary(mat.source, qty);
         totalTomestone += tom;
+        totalMilitary += mil;
 
         const item = {
           name: mat.name,
@@ -142,6 +156,7 @@ const UI = {
           source: mat.source || '',
           sourceType: this.getSourceType(mat.source || ''),
           tomestone: tom,
+          military: mil,
           note: mat.note || '',
           subMaterials: []
         };
@@ -151,13 +166,16 @@ const UI = {
           mat.subMaterials.forEach(sub => {
             const subQty = sub.quantity * qty;
             const subTom = (sub.tomestone || 0) * qty;
+            const subMil = parseMilitary(sub.source, subQty);
             totalTomestone += subTom;
+            totalMilitary += subMil;
             item.subMaterials.push({
               name: sub.name,
               quantity: subQty,
               source: sub.source || '',
               sourceType: this.getSourceType(sub.source || ''),
               tomestone: subTom,
+              military: subMil,
               note: sub.note || ''
             });
           });
@@ -220,7 +238,10 @@ const UI = {
       <details class="material-summary-compact" open>
         <summary class="summary-header">
           <span class="summary-title-text">材料總覽</span>
-          ${totalTomestone > 0 ? `<span class="summary-tomestone">${this.getSourceIcon('tomestone')} 詩學總計: ${totalTomestone}</span>` : ''}
+          <span class="summary-totals">
+            ${totalTomestone > 0 ? `<span class="summary-tomestone">${this.getSourceIcon('tomestone')} 詩學: ${totalTomestone.toLocaleString()}</span>` : ''}
+            ${totalMilitary > 0 ? `<span class="summary-military">${this.getSourceIcon('military')} 軍票: ${totalMilitary.toLocaleString()}</span>` : ''}
+          </span>
           <span class="summary-count">${totalCount} 種材料</span>
         </summary>
         <div class="summary-table">
