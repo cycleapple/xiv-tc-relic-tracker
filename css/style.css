@@ -734,6 +734,15 @@ a:hover {
   text-decoration: line-through;
 }
 
+.stage-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--success-color);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
 .mat-checkbox {
   width: 20px;
   height: 20px;

@@ -129,6 +129,28 @@ const Storage = {
     return this.updateMaterialProgress(relicType, jobId, stageId, materialId, newValue);
   },
 
+  // Toggle entire stage completion
+  toggleStageComplete(relicType, jobId, stageId, materials) {
+    const data = this.load();
+    const jobProgress = data.progress[relicType]?.[jobId]?.[stageId] || {};
+
+    // Check if all materials are already complete
+    const allComplete = materials.every(mat => (jobProgress[mat.id] || 0) >= mat.quantity);
+
+    if (allComplete) {
+      // Uncheck all
+      if (data.progress[relicType]?.[jobId]?.[stageId]) {
+        materials.forEach(mat => {
+          data.progress[relicType][jobId][stageId][mat.id] = 0;
+        });
+      }
+      return this.save(data);
+    } else {
+      // Check all
+      return this.completeStage(relicType, jobId, stageId, materials);
+    }
+  },
+
   // Mark entire stage as complete
   completeStage(relicType, jobId, stageId, materials) {
     const data = this.load();

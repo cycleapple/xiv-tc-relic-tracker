@@ -652,6 +652,12 @@ const UI = {
         <div class="stage-header" onclick="UI.toggleStage('${stageKey}')">
           <div class="stage-main-info">
             <div class="stage-name-wrapper">
+              ${isTracking && materials && materials.length > 0 ? `
+                <input type="checkbox" class="stage-checkbox"
+                       ${isComplete ? 'checked' : ''}
+                       onclick="event.stopPropagation(); UI.toggleStageComplete('${relicType}', '${jobId}', '${stage.id}')"
+                       title="全選/取消全選此階段">
+              ` : ''}
               <span class="stage-name">${stage.name}</span>
               ${stage.ilvl ? `<span class="stage-ilvl">iLv ${stage.ilvl}</span>` : ''}
             </div>
@@ -916,6 +922,20 @@ const UI = {
       const content = card.querySelector('.stage-content');
       if (content) content.style.display = 'none';
     });
+  },
+
+  // Toggle all materials in a stage
+  toggleStageComplete(relicType, jobId, stageId) {
+    const data = this.getRelicData(relicType);
+    if (!data || !data.stages) return;
+
+    const isSkysteel = relicType === 'skysteel';
+    const stages = isSkysteel ? this.getSkySteelStages(data.stages, jobId) : data.stages;
+    const stage = stages.find(s => s.id === stageId);
+    if (!stage || !stage.materials) return;
+
+    Storage.toggleStageComplete(relicType, jobId, stageId, stage.materials);
+    this.refreshTrackingView(relicType);
   },
 
   // Toggle material completion
