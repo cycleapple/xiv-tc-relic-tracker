@@ -35,14 +35,14 @@ const ANIMA_DATA = {
           name: '流光之火/風/雷水晶',
           quantity: 1,
           source: 'FATE',
-          note: '火：魔大陸阿濟茲拉\n風：阿巴拉提亞雲海\n雷：翻雲霧海'
+          note: '火：魔大陸\n風：阿巴拉提亞雲海\n雷：德拉瓦尼亞雲海'
         },
         {
           id: 'luminous_ice_earth_water',
           name: '流光之冰/土/水水晶',
           quantity: 1,
           source: 'FATE',
-          note: '冰：庫爾札斯西部高地\n土：龍堡參天高地\n水：龍堡內陸低地'
+          note: '冰：庫爾札斯西部高地\n土：德拉瓦尼亞儷地\n水：德拉瓦尼亞河谷地'
         }
       ]
     },
