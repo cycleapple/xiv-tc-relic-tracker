@@ -23,7 +23,7 @@ const ZODIAC_DATA = {
         },
         {
           id: 'thavnairian_mist',
-          name: '拉札罕淬火油',
+          name: '拉札漢淬火油',
           quantity: 1,
           source: '詩學 15',
           tomestone: 15,
@@ -153,19 +153,19 @@ const ZODIAC_DATA = {
         },
         {
           id: 'war_god_sand',
-          name: '戰神砂',
+          name: '戰神沙',
           quantity: 1,
           source: '雜用商人 100000G',
           note: '白雲崖雜用商人 庫爾札斯中央高地 (X:13.3, Y:16)'
         },
         { id: 'fire_ring', name: '熔火指環HQ', quantity: 1, source: '製作或購買', note: '雕金匠製作' },
-        { id: 'firewood', name: '高品質的木柴HQ', quantity: 1, source: '製作或購買', note: '刻木匠製作' },
-        { id: 'mortar', name: '高品質的研缽HQ', quantity: 1, source: '製作或購買', note: '鍛鐵匠製作' },
-        { id: 'pestle', name: '高品質的缽杵HQ', quantity: 1, source: '製作或購買', note: '木工製作' },
+        { id: 'firewood', name: '高質的木柴HQ', quantity: 1, source: '製作或購買', note: '刻木匠製作' },
+        { id: 'mortar', name: '高質的研缽HQ', quantity: 1, source: '製作或購買', note: '鍛鐵匠製作' },
+        { id: 'pestle', name: '高質的缽杵HQ', quantity: 1, source: '製作或購買', note: '木工製作' },
         { id: 'eel_pie', name: '秘製鰻魚派HQ', quantity: 1, source: '製作或購買', note: '烹調師製作' },
-        { id: 'cloth', name: '高品質的古布料HQ', quantity: 1, source: '製作或購買', note: '裁縫師製作' },
-        { id: 'parchment', name: '高品質的羊皮紙HQ', quantity: 1, source: '製作或購買', note: '煉金術士製作' },
-        { id: 'powder', name: '高品質的安定粉HQ', quantity: 1, source: '製作或購買', note: '煉金術士製作' }
+        { id: 'cloth', name: '高質的古布料HQ', quantity: 1, source: '製作或購買', note: '裁縫師製作' },
+        { id: 'parchment', name: '高質的羊皮紙HQ', quantity: 1, source: '製作或購買', note: '煉金術士製作' },
+        { id: 'powder', name: '高質的安定粉HQ', quantity: 1, source: '製作或購買', note: '煉金術士製作' }
       ]
     },
     {

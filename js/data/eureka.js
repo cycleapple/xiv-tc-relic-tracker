@@ -115,7 +115,7 @@ const EUREKA_DATA = {
       materials: [
         {
           id: 'pyros_crystal',
-          name: '涌火水晶',
+          name: '湧火水晶',
           quantity: 150,
           source: '涌火之地NM',
           note: 'NM獲得'
@@ -131,7 +131,7 @@ const EUREKA_DATA = {
       materials: [
         {
           id: 'pyros_crystal_2',
-          name: '涌火水晶',
+          name: '湧火水晶',
           quantity: 200,
           source: '涌火之地NM',
           note: 'NM獲得'
@@ -147,7 +147,7 @@ const EUREKA_DATA = {
       materials: [
         {
           id: 'pyros_crystal_3',
-          name: '涌火水晶',
+          name: '湧火水晶',
           quantity: 300,
           source: '涌火之地NM',
           note: 'NM獲得'
@@ -156,8 +156,8 @@ const EUREKA_DATA = {
           id: 'penthesilea_flame',
           name: '彭忒西勒亞的火種',
           quantity: 5,
-          source: 'NM掉落/涌火水晶 50兌換',
-          note: '49級 NM「炎蝶的女王——彭忒西勒亞」\n金牌可獲得3個\n可使用涌火水晶 ×50 兌換（調查隊的警衛員@營地內）'
+          source: 'NM掉落/湧火水晶 50兌換',
+          note: '49級 NM「炎蝶的女王——彭忒西勒亞」\n金牌可獲得3個\n可使用湧火水晶 ×50 兌換（調查隊的警衛員@營地內）'
         },
         { id: 'logos_action_30', name: '記錄文理技能', quantity: 30, source: '收集文理技能' }
       ]
@@ -205,7 +205,7 @@ const EUREKA_DATA = {
         },
         {
           id: 'crystalline_scale',
-          name: '結晶龍鱗',
+          name: '水晶龍之鱗',
           quantity: 5,
           source: 'BA掉落',
           note: '59級 NM「水晶之龍——起源守望者」\n金牌可獲得3個'
@@ -218,7 +218,7 @@ const EUREKA_DATA = {
       ilvl: 405,
       description: '強化光效',
       materials: [
-        { id: 'eureka_fragment', name: '優雷卡碎晶', quantity: 100, source: 'BA掉落' }
+        { id: 'eureka_fragment', name: '優雷卡的斷片', quantity: 100, source: 'BA掉落' }
       ]
     }
   ]

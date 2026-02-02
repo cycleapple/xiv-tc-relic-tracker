@@ -272,7 +272,7 @@ const UI = {
       return `
         <div class="${classes}"
              ${hasTooltip ? `data-tooltip="${tooltipText}"` : ''}>
-          <span class="summary-name">${isSubMaterial ? '└ ' : ''}${mat.name}</span>
+          <span class="summary-name">${isSubMaterial ? '└ ' : ''}${mat.name}${this.renderSearchBtn(mat.name)}</span>
           <span class="summary-qty">×${mat.quantity}</span>
           <span class="summary-source">${this.getShortSource(mat.source)}</span>
         </div>
@@ -578,6 +578,14 @@ const UI = {
     return `<button class="skysteel-copy-btn" onclick="event.preventDefault();event.stopPropagation();navigator.clipboard.writeText('${escaped}');UI.showToast('已複製：${escaped}')" title="複製名稱"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`;
   },
 
+  // Render a search button that links to the item search site
+  renderSearchBtn(matName) {
+    const lookupName = matName.replace(/HQ$/, '');
+    const itemId = typeof ITEM_NAME_TO_ID !== 'undefined' && ITEM_NAME_TO_ID[lookupName];
+    if (!itemId) return '';
+    return `<a class="search-btn" href="https://cycleapple.github.io/ffxiv-item-search-tc/item/${itemId}" target="_blank" rel="noopener noreferrer" title="前往物品搜尋站" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></a>`;
+  },
+
   // Render a checkbox cell for skysteel
   renderSkysteelCell(jobId, stageId, matIdx, matName, qty, isComplete) {
     const matId = `${stageId}_${matIdx}`;
@@ -587,7 +595,7 @@ const UI = {
           <input type="checkbox" ${isComplete ? 'checked' : ''}
                  onchange="UI.toggleSkysteelMat('${jobId}','${stageId}','${matId}',${qty})">
           <span>${matName} ×${qty}</span>
-        </label>${this.renderCopyBtn(matName)}
+        </label>${this.renderCopyBtn(matName)}${this.renderSearchBtn(matName)}
       </td>`;
   },
 
@@ -601,7 +609,7 @@ const UI = {
           <input type="checkbox" ${bothComplete ? 'checked' : ''}
                  onchange="UI.toggleSkysteelScripPair('${jobId}','${stageAId}','${matAId}',${qtyA},'${stageBId}','${matBId}',${qtyB})">
           <span>${matName} ×${totalQty}</span>
-        </label>${this.renderCopyBtn(matName)}
+        </label>${this.renderCopyBtn(matName)}${this.renderSearchBtn(matName)}
       </td>`;
   },
 
@@ -737,11 +745,11 @@ const UI = {
           <td class="skysteel-job-cell">${jobInfo ? `<img class="job-icon-sm" src="${jobInfo.icon}" alt="${jobInfo.name}">` : ''}${jobInfo?.name || jobId}</td>
           <td class="${allDoneA ? 'skysteel-done' : ''}">${jobA.materials.map((m, idx) => {
             const done = allMatsA[idx].done;
-            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageA.id}','${stageA.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}`;
+            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageA.id}','${stageA.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}${this.renderSearchBtn(m.name)}`;
           }).join('<br>')}</td>
           <td class="${allDoneB ? 'skysteel-done' : ''}">${jobB.materials.map((m, idx) => {
             const done = allMatsB[idx].done;
-            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageB.id}','${stageB.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}`;
+            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageB.id}','${stageB.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}${this.renderSearchBtn(m.name)}`;
           }).join('<br>')}</td>
         </tr>`;
       });
@@ -1028,7 +1036,7 @@ const UI = {
                        onchange="UI.toggleMaterial('${relicType}', '${jobId}', '${stageId}', '${mat.id}', ${mat.quantity})">
               ` : '<div></div>'}
               <div class="mat-info">
-                <div class="mat-name">${mat.name} <span class="text-muted">×${mat.quantity}</span></div>
+                <div class="mat-name">${mat.name} <span class="text-muted">×${mat.quantity}</span>${this.renderSearchBtn(mat.name)}</div>
                 <div class="mat-source">
                   ${sourceBadges}
                 </div>
