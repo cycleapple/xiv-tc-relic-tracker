@@ -16,7 +16,8 @@ const Storage = {
         eureka: {},
         resistance: {},
         manderville: {},
-        aetherial: {}
+        aetherial: {},
+        skysteel: {}
       },
       settings: {
         expandedStages: {},

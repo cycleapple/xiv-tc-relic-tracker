@@ -1284,3 +1284,204 @@ a:hover {
 .text-center {
   text-align: center;
 }
+
+/* === Skysteel Reference Tables === */
+.skysteel-reference {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.skysteel-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.skysteel-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+}
+
+.patch-badge {
+  background: var(--accent-color);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.skysteel-group-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.skysteel-notes {
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-xl);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.skysteel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.skysteel-table thead th {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.skysteel-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.15s ease;
+}
+
+.skysteel-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.skysteel-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+.skysteel-table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.skysteel-job-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.skysteel-job-cell .job-icon-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.skysteel-row-check {
+  width: 32px;
+  text-align: center;
+}
+
+.skysteel-row-check input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--success-color);
+}
+
+.skysteel-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+}
+
+.skysteel-check input[type="checkbox"] {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--success-color);
+  flex-shrink: 0;
+}
+
+.skysteel-check input:checked + span {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.skysteel-mat-cell {
+  white-space: nowrap;
+}
+
+.skysteel-mat-cell .skysteel-check,
+.skysteel-mat-cell .skysteel-copy-btn {
+  vertical-align: middle;
+}
+
+.skysteel-copy-btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  vertical-align: middle;
+  margin-left: var(--spacing-xs);
+}
+
+.skysteel-copy-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+td:hover .skysteel-copy-btn {
+  opacity: 0.6;
+}
+
+.skysteel-copy-btn:hover {
+  opacity: 1 !important;
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+.skysteel-done {
+  background: rgba(90, 156, 105, 0.08);
+}
+
+.skysteel-row-done {
+  opacity: 0.6;
+}
+
+.skysteel-row-done:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .skysteel-table {
+    font-size: 0.75rem;
+  }
+
+  .skysteel-table th,
+  .skysteel-table td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .skysteel-group-header {
+    flex-wrap: wrap;
+  }
+}

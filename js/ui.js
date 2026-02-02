@@ -43,7 +43,8 @@ const UI = {
       { id: 'eureka', name: '優武', version: '4.0' },
       { id: 'resistance', name: '義武', version: '5.0' },
       { id: 'manderville', name: '曼武', version: '6.0' },
-      { id: 'aetherial', name: '幻武', version: '7.0' }
+      { id: 'aetherial', name: '幻武', version: '7.0' },
+      { id: 'skysteel', name: '天鋼', version: '5.0' }
     ];
 
     tabNav.innerHTML = relics.map(relic => `
@@ -89,15 +90,18 @@ const UI = {
       return;
     }
 
-    // Always show reference view first, then tracking below
+    // Skysteel uses a unified view (reference + tracking combined)
+    const isSkysteel = relicType === 'skysteel';
     const html = `
       ${this.renderRelicHeader(data)}
-      ${this.renderMaterialSummary(data)}
-      ${this.renderModeToggle(relicType)}
+      ${!isSkysteel ? this.renderMaterialSummary(data) : ''}
+      ${!isSkysteel ? this.renderModeToggle(relicType) : ''}
       <div id="view-${relicType}">
-        ${this.state.currentMode === 'tracking'
-          ? this.renderTrackingView(relicType, data)
-          : this.renderReferenceView(relicType, data)}
+        ${isSkysteel
+          ? this.renderSkysteelReferenceView(data)
+          : (this.state.currentMode === 'tracking'
+            ? this.renderTrackingView(relicType, data)
+            : this.renderReferenceView(relicType, data))}
       </div>
     `;
 
@@ -343,7 +347,8 @@ const UI = {
     dungeon: 'https://xivapi.com/i/061000/061801.png',
     raid: 'https://xivapi.com/i/061000/061802.png',
     market: 'https://xivapi.com/i/060000/060993.png',
-    craft: 'https://xivapi.com/i/060000/060434.png'
+    craft: 'https://xivapi.com/i/060000/060434.png',
+    scrip_purple: 'https://xivapi.com/i/065000/065088.png'
   },
 
   // Get icon img tag
@@ -477,33 +482,359 @@ const UI = {
   renderReferenceView(relicType, data) {
     if (!data.stages) return '<p>無階段數據</p>';
 
-    // For skysteel, show one example job's materials
-    const isSkysteel = relicType === 'skysteel';
+    if (relicType === 'skysteel') {
+      return this.renderSkysteelReferenceView(data);
+    }
 
     return `
       ${this.renderPrerequisiteMaterials(data)}
       <div class="stages-timeline">
         ${data.stages.map((stage, index) => {
-          // Get materials for display
-          let materials = stage.materials;
-          if (isSkysteel && materials) {
-            if (materials.crafters && materials.crafters[0]) {
-              materials = materials.crafters[0].materials.map((m, i) => ({
-                id: `${stage.id}_${i}`,
-                name: m.name,
-                quantity: m.quantity,
-                source: m.note || ''
-              }));
-            } else {
-              materials = [];
-            }
-          }
-
-          return this.renderStageCard(stage, index + 1, materials, false, relicType, null);
+          return this.renderStageCard(stage, index + 1, stage.materials, false, relicType, null);
         }).join('')}
       </div>
       ${this.renderSharedMaterials(data)}
     `;
+  },
+
+  // Render skysteel unified view - grouped by patch with tables + tracking checkboxes
+  renderSkysteelReferenceView(data) {
+    const stages = data.stages;
+
+    // Load progress for all jobs
+    const progress = {};
+    const allJobs = [
+      ...(stages[1]?.materials?.crafters || []).map(j => j.job),
+      ...(stages[1]?.materials?.gatherers || []).map(j => j.job)
+    ];
+    allJobs.forEach(jobId => {
+      progress[jobId] = Storage.getJobProgress('skysteel', jobId);
+    });
+
+    let html = '<div class="skysteel-reference">';
+
+    // Group 1: Base tool (quest only)
+    html += `
+      <div class="skysteel-group">
+        <div class="skysteel-group-header">
+          <span class="patch-badge">版本 5.1</span>
+          <span class="skysteel-group-title">${stages[0].name} <span class="stage-ilvl">iLv ${stages[0].ilvl}</span></span>
+        </div>
+        <ul class="skysteel-notes">
+          <li>完成任務「${stages[0].quest}」，使用任務獎勵的天鋼工具箱後可獲得相應職業的專用工具（主手）。</li>
+          <li>第二把及以上的專用工具可在德尼斯（伊修加爾德下層 X:8, Y:10.1）處花費 ${this.getSourceIcon('gil')}80,000 金幣購買。</li>
+          <li>在獲取到第一把天鋼工具後，製作筆記會在支線任務條目下追加天鋼工具的特殊配方。</li>
+        </ul>
+      </div>
+    `;
+
+    // Group 2: 5.25 - Stages 2+3
+    html += this.renderSkysteelPairedGroup(
+      '5.25', `${stages[1].name} <span class="stage-ilvl">iLv ${stages[1].ilvl}</span> 與${stages[2].name} <span class="stage-ilvl">iLv ${stages[2].ilvl}</span>`,
+      stages[1], stages[2], progress,
+      [
+        `強化至${stages[1].name}需要20個工票素材和普通素材A，強化至${stages[2].name}需要30個工票素材和普通素材B。`,
+        '製作必須主手裝備對應的工具才能進行，不對副手進行限制。',
+        '（90級或以上）製作時可以使用「工匠的神速技巧」。',
+        `工票素材需要使用 ${this.getSourceIcon('scrip_purple')}20 巧手紫票在任意工票交易處兌換，或從市場購買。`
+      ]
+    );
+
+    // Group 3: 5.35 - Stages 4+5
+    html += this.renderSkysteelPairedGroup(
+      '5.35', `${stages[3].name} <span class="stage-ilvl">iLv ${stages[3].ilvl}</span> 與${stages[4].name} <span class="stage-ilvl">iLv ${stages[4].ilvl}</span>`,
+      stages[3], stages[4], progress,
+      [
+        `強化至${stages[3].name}需要工票素材×18（收藏品，依收藏價值決定數量）＋普通素材×36。`,
+        `強化至${stages[4].name}需要工票素材×21＋普通素材×21。`,
+        '工票素材為收藏品製作交納，用巧手紫票或蒼天街振興票兌換材料。',
+        '收藏品價值越高，每次交納獲得的進度越多，18為最高收藏價值時的最低需求數量。'
+      ]
+    );
+
+    // Group 4: 5.45 - Stage 6
+    html += this.renderSkysteelSingleGroup(
+      '5.45', `${stages[5].name} <span class="stage-ilvl">iLv ${stages[5].ilvl}</span>`, stages[5], progress,
+      [
+        '工票素材×20＋蒼天街空島素材各×100。此階段為高難度配方。',
+        '工票素材用巧手紫票或蒼天街振興票兌換。',
+        '空島素材可在蒼天街雲冠群島（空島）採集獲得。'
+      ]
+    );
+
+    html += '</div>';
+    return html;
+  },
+
+  // Check if a skysteel material is complete
+  isSkysteelMatComplete(progress, jobId, stageId, matIdx, qty) {
+    const matId = `${stageId}_${matIdx}`;
+    return (progress[jobId]?.[stageId]?.[matId] || 0) >= qty;
+  },
+
+  // Render a copy button for material name
+  renderCopyBtn(matName) {
+    const escaped = matName.replace(/'/g, "\\'");
+    return `<button class="skysteel-copy-btn" onclick="event.preventDefault();event.stopPropagation();navigator.clipboard.writeText('${escaped}');UI.showToast('已複製：${escaped}')" title="複製名稱"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`;
+  },
+
+  // Render a checkbox cell for skysteel
+  renderSkysteelCell(jobId, stageId, matIdx, matName, qty, isComplete) {
+    const matId = `${stageId}_${matIdx}`;
+    return `
+      <td class="skysteel-mat-cell ${isComplete ? 'skysteel-done' : ''}">
+        <label class="skysteel-check">
+          <input type="checkbox" ${isComplete ? 'checked' : ''}
+                 onchange="UI.toggleSkysteelMat('${jobId}','${stageId}','${matId}',${qty})">
+          <span>${matName} ×${qty}</span>
+        </label>${this.renderCopyBtn(matName)}
+      </td>`;
+  },
+
+  // Render a combined scrip checkbox cell (marks two stages at once)
+  renderSkysteelScripCell(jobId, stageAId, qtyA, stageBId, qtyB, matName, totalQty, bothComplete) {
+    const matAId = `${stageAId}_0`;
+    const matBId = `${stageBId}_0`;
+    return `
+      <td class="skysteel-mat-cell ${bothComplete ? 'skysteel-done' : ''}">
+        <label class="skysteel-check">
+          <input type="checkbox" ${bothComplete ? 'checked' : ''}
+                 onchange="UI.toggleSkysteelScripPair('${jobId}','${stageAId}','${matAId}',${qtyA},'${stageBId}','${matBId}',${qtyB})">
+          <span>${matName} ×${totalQty}</span>
+        </label>${this.renderCopyBtn(matName)}
+      </td>`;
+  },
+
+  // Toggle a single skysteel material
+  toggleSkysteelMat(jobId, stageId, matId, qty) {
+    Storage.toggleMaterialComplete('skysteel', jobId, stageId, matId, qty);
+    this.renderContent('skysteel');
+  },
+
+  // Toggle a paired scrip material (both stages at once)
+  toggleSkysteelScripPair(jobId, stageAId, matAId, qtyA, stageBId, matBId, qtyB) {
+    const progress = Storage.getJobProgress('skysteel', jobId);
+    const aOk = (progress[stageAId]?.[matAId] || 0) >= qtyA;
+    const bOk = (progress[stageBId]?.[matBId] || 0) >= qtyB;
+
+    if (aOk && bOk) {
+      // Uncheck both
+      Storage.updateMaterialProgress('skysteel', jobId, stageAId, matAId, 0);
+      Storage.updateMaterialProgress('skysteel', jobId, stageBId, matBId, 0);
+    } else {
+      // Check both
+      if (!aOk) Storage.updateMaterialProgress('skysteel', jobId, stageAId, matAId, qtyA);
+      if (!bOk) Storage.updateMaterialProgress('skysteel', jobId, stageBId, matBId, qtyB);
+    }
+    this.renderContent('skysteel');
+  },
+
+  // Toggle all materials for a job in a skysteel group
+  toggleSkysteelRow(jobId, matsJson) {
+    const mats = JSON.parse(matsJson);
+    const progress = Storage.getJobProgress('skysteel', jobId);
+    const allDone = mats.every(m => (progress[m.stageId]?.[m.matId] || 0) >= m.qty);
+
+    mats.forEach(m => {
+      Storage.updateMaterialProgress('skysteel', jobId, m.stageId, m.matId, allDone ? 0 : m.qty);
+    });
+    this.renderContent('skysteel');
+  },
+
+  // Render a paired skysteel group (two stages combined into one table)
+  renderSkysteelPairedGroup(patch, title, stageA, stageB, progress, notes) {
+    let html = `
+      <div class="skysteel-group">
+        <div class="skysteel-group-header">
+          <span class="patch-badge">版本 ${patch}</span>
+          <span class="skysteel-group-title">${title}</span>
+        </div>
+        <ul class="skysteel-notes">
+          ${notes.map(n => `<li>${n}</li>`).join('')}
+        </ul>
+    `;
+
+    // Crafters table
+    if (stageA.materials?.crafters) {
+      html += `<table class="skysteel-table"><thead><tr>
+        <th></th><th>能工巧匠</th><th>工票素材（合計）</th><th>普通素材A</th><th>普通素材B</th>
+      </tr></thead><tbody>`;
+
+      stageA.materials.crafters.forEach((jobA, i) => {
+        const jobB = stageB.materials.crafters[i];
+        const jobId = jobA.job;
+        const jobInfo = getJobInfo(jobId);
+        const scripA = jobA.materials[0];
+        const scripB = jobB.materials[0];
+        const normalA = jobA.materials[1];
+        const normalB = jobB.materials[1];
+        const totalScrip = scripA.quantity + scripB.quantity;
+
+        const scripAOk = this.isSkysteelMatComplete(progress, jobId, stageA.id, 0, scripA.quantity);
+        const scripBOk = this.isSkysteelMatComplete(progress, jobId, stageB.id, 0, scripB.quantity);
+        const normalAOk = this.isSkysteelMatComplete(progress, jobId, stageA.id, 1, normalA.quantity);
+        const normalBOk = this.isSkysteelMatComplete(progress, jobId, stageB.id, 1, normalB.quantity);
+        const allDone = scripAOk && scripBOk && normalAOk && normalBOk;
+
+        // Build row mats for row toggle
+        const rowMats = JSON.stringify([
+          { stageId: stageA.id, matId: `${stageA.id}_0`, qty: scripA.quantity },
+          { stageId: stageB.id, matId: `${stageB.id}_0`, qty: scripB.quantity },
+          { stageId: stageA.id, matId: `${stageA.id}_1`, qty: normalA.quantity },
+          { stageId: stageB.id, matId: `${stageB.id}_1`, qty: normalB.quantity }
+        ]).replace(/"/g, '&quot;');
+
+        html += `<tr class="${allDone ? 'skysteel-row-done' : ''}">
+          <td class="skysteel-row-check">
+            <input type="checkbox" ${allDone ? 'checked' : ''}
+                   onchange="UI.toggleSkysteelRow('${jobId}','${rowMats}')"
+                   title="全選/取消全選">
+          </td>
+          <td class="skysteel-job-cell">${jobInfo ? `<img class="job-icon-sm" src="${jobInfo.icon}" alt="${jobInfo.name}">` : ''}${jobInfo?.name || jobId}</td>
+          ${this.renderSkysteelScripCell(jobId, stageA.id, scripA.quantity, stageB.id, scripB.quantity, scripA.name, totalScrip, scripAOk && scripBOk)}
+          ${this.renderSkysteelCell(jobId, stageA.id, 1, normalA.name, normalA.quantity, normalAOk)}
+          ${this.renderSkysteelCell(jobId, stageB.id, 1, normalB.name, normalB.quantity, normalBOk)}
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+    }
+
+    // Gatherers table
+    if (stageA.materials?.gatherers) {
+      html += `<table class="skysteel-table"><thead><tr>
+        <th></th><th>大地使者</th><th>${stageA.name}素材</th><th>${stageB.name}素材</th>
+      </tr></thead><tbody>`;
+
+      stageA.materials.gatherers.forEach((jobA, i) => {
+        const jobB = stageB.materials.gatherers[i];
+        const jobId = jobA.job;
+        const jobInfo = getJobInfo(jobId);
+
+        // Check completion for all materials in both stages
+        const allMatsA = jobA.materials.map((m, idx) => ({
+          stageId: stageA.id, matId: `${stageA.id}_${idx}`, qty: m.quantity,
+          done: this.isSkysteelMatComplete(progress, jobId, stageA.id, idx, m.quantity)
+        }));
+        const allMatsB = jobB.materials.map((m, idx) => ({
+          stageId: stageB.id, matId: `${stageB.id}_${idx}`, qty: m.quantity,
+          done: this.isSkysteelMatComplete(progress, jobId, stageB.id, idx, m.quantity)
+        }));
+        const allDoneA = allMatsA.every(m => m.done);
+        const allDoneB = allMatsB.every(m => m.done);
+        const allDone = allDoneA && allDoneB;
+
+        const rowMats = JSON.stringify([...allMatsA, ...allMatsB].map(m => ({
+          stageId: m.stageId, matId: m.matId, qty: m.qty
+        }))).replace(/"/g, '&quot;');
+
+        html += `<tr class="${allDone ? 'skysteel-row-done' : ''}">
+          <td class="skysteel-row-check">
+            <input type="checkbox" ${allDone ? 'checked' : ''}
+                   onchange="UI.toggleSkysteelRow('${jobId}','${rowMats}')"
+                   title="全選/取消全選">
+          </td>
+          <td class="skysteel-job-cell">${jobInfo ? `<img class="job-icon-sm" src="${jobInfo.icon}" alt="${jobInfo.name}">` : ''}${jobInfo?.name || jobId}</td>
+          <td class="${allDoneA ? 'skysteel-done' : ''}">${jobA.materials.map((m, idx) => {
+            const done = allMatsA[idx].done;
+            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageA.id}','${stageA.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}`;
+          }).join('<br>')}</td>
+          <td class="${allDoneB ? 'skysteel-done' : ''}">${jobB.materials.map((m, idx) => {
+            const done = allMatsB[idx].done;
+            return `<label class="skysteel-check"><input type="checkbox" ${done ? 'checked' : ''} onchange="UI.toggleSkysteelMat('${jobId}','${stageB.id}','${stageB.id}_${idx}',${m.quantity})"><span>${m.name} ×${m.quantity}</span></label>${this.renderCopyBtn(m.name)}`;
+          }).join('<br>')}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // Render a single skysteel group (one stage as table)
+  renderSkysteelSingleGroup(patch, title, stage, progress, notes) {
+    let html = `
+      <div class="skysteel-group">
+        <div class="skysteel-group-header">
+          <span class="patch-badge">版本 ${patch}</span>
+          <span class="skysteel-group-title">${title}</span>
+        </div>
+        <ul class="skysteel-notes">
+          ${notes.map(n => `<li>${n}</li>`).join('')}
+        </ul>
+    `;
+
+    // Crafters table
+    if (stage.materials?.crafters) {
+      html += `<table class="skysteel-table"><thead><tr>
+        <th></th><th>能工巧匠</th><th>工票素材</th><th>空島素材A</th><th>空島素材B</th>
+      </tr></thead><tbody>`;
+
+      stage.materials.crafters.forEach(job => {
+        const jobId = job.job;
+        const jobInfo = getJobInfo(jobId);
+        const mats = job.materials;
+
+        const matStates = mats.map((m, idx) => ({
+          done: this.isSkysteelMatComplete(progress, jobId, stage.id, idx, m.quantity)
+        }));
+        const allDone = matStates.every(s => s.done);
+
+        const rowMats = JSON.stringify(mats.map((m, idx) => ({
+          stageId: stage.id, matId: `${stage.id}_${idx}`, qty: m.quantity
+        }))).replace(/"/g, '&quot;');
+
+        html += `<tr class="${allDone ? 'skysteel-row-done' : ''}">
+          <td class="skysteel-row-check">
+            <input type="checkbox" ${allDone ? 'checked' : ''}
+                   onchange="UI.toggleSkysteelRow('${jobId}','${rowMats}')"
+                   title="全選/取消全選">
+          </td>
+          <td class="skysteel-job-cell">${jobInfo ? `<img class="job-icon-sm" src="${jobInfo.icon}" alt="${jobInfo.name}">` : ''}${jobInfo?.name || jobId}</td>
+          ${mats.map((m, idx) => this.renderSkysteelCell(jobId, stage.id, idx, m.name, m.quantity, matStates[idx].done)).join('')}
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+    }
+
+    // Gatherers table
+    if (stage.materials?.gatherers) {
+      html += `<table class="skysteel-table"><thead><tr>
+        <th></th><th>大地使者</th><th colspan="${stage.materials.gatherers[0]?.materials.length || 1}">素材</th>
+      </tr></thead><tbody>`;
+
+      stage.materials.gatherers.forEach(job => {
+        const jobId = job.job;
+        const jobInfo = getJobInfo(jobId);
+
+        const matStates = job.materials.map((m, idx) => ({
+          done: this.isSkysteelMatComplete(progress, jobId, stage.id, idx, m.quantity)
+        }));
+        const allDone = matStates.every(s => s.done);
+
+        const rowMats = JSON.stringify(job.materials.map((m, idx) => ({
+          stageId: stage.id, matId: `${stage.id}_${idx}`, qty: m.quantity
+        }))).replace(/"/g, '&quot;');
+
+        html += `<tr class="${allDone ? 'skysteel-row-done' : ''}">
+          <td class="skysteel-row-check">
+            <input type="checkbox" ${allDone ? 'checked' : ''}
+                   onchange="UI.toggleSkysteelRow('${jobId}','${rowMats}')"
+                   title="全選/取消全選">
+          </td>
+          <td class="skysteel-job-cell">${jobInfo ? `<img class="job-icon-sm" src="${jobInfo.icon}" alt="${jobInfo.name}">` : ''}${jobInfo?.name || jobId}</td>
+          ${job.materials.map((m, idx) => this.renderSkysteelCell(jobId, stage.id, idx, m.name, m.quantity, matStates[idx].done)).join('')}
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+    }
+
+    html += '</div>';
+    return html;
   },
 
   // Render prerequisite materials section (for aetherial weapons)
