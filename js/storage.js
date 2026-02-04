@@ -20,7 +20,7 @@ const Storage = {
         skysteel: {}
       },
       settings: {
-        expandedStages: {},
+        collapsedStages: {},
         lastSelectedTab: 'zodiac',
         lastSelectedJobs: {}
       }

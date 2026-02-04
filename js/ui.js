@@ -7,7 +7,7 @@ const UI = {
     currentTab: 'zodiac',
     currentMode: 'reference', // 'reference' or 'tracking'
     selectedJob: null,
-    expandedStages: new Set(),
+    collapsedStages: new Set(),
     includeOptional: false // 是否計算可選詩學項目
   },
 
@@ -981,7 +981,7 @@ const UI = {
   // Render a single stage card
   renderStageCard(stage, stepNumber, materials, isTracking, relicType, jobId, jobProgress = {}, stageProgress = null) {
     const stageKey = `${relicType}-${stage.id}`;
-    const isExpanded = !isTracking || this.state.expandedStages.has(stageKey) || this.state.expandedStages.size === 0;
+    const isExpanded = !isTracking || !this.state.collapsedStages.has(stageKey);
     const isComplete = stageProgress && stageProgress.percentage === 100;
 
     return `
@@ -1230,14 +1230,16 @@ const UI = {
     const content = card.querySelector('.stage-content');
     if (!content) return;
 
-    if (this.state.expandedStages.has(stageKey)) {
-      this.state.expandedStages.delete(stageKey);
-      card.classList.remove('expanded');
-      content.style.display = 'none';
-    } else {
-      this.state.expandedStages.add(stageKey);
+    if (this.state.collapsedStages.has(stageKey)) {
+      // Currently collapsed, expand it
+      this.state.collapsedStages.delete(stageKey);
       card.classList.add('expanded');
       content.style.display = '';
+    } else {
+      // Currently expanded, collapse it
+      this.state.collapsedStages.add(stageKey);
+      card.classList.remove('expanded');
+      content.style.display = 'none';
     }
   },
 
@@ -1245,7 +1247,7 @@ const UI = {
   expandAllStages(relicType) {
     document.querySelectorAll(`#tracking-stages-${relicType} .stage-card`).forEach(card => {
       const key = card.dataset.stageKey;
-      this.state.expandedStages.add(key);
+      this.state.collapsedStages.delete(key);
       card.classList.add('expanded');
       const content = card.querySelector('.stage-content');
       if (content) content.style.display = '';
@@ -1256,7 +1258,7 @@ const UI = {
   collapseAllStages(relicType) {
     document.querySelectorAll(`#tracking-stages-${relicType} .stage-card`).forEach(card => {
       const key = card.dataset.stageKey;
-      this.state.expandedStages.delete(key);
+      this.state.collapsedStages.add(key);
       card.classList.remove('expanded');
       const content = card.querySelector('.stage-content');
       if (content) content.style.display = 'none';
