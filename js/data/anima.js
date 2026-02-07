@@ -66,10 +66,10 @@ const ANIMA_DATA = {
           name: '附魔橡膠',
           quantity: 1,
           source: '合成',
-          note: '需要：神秘骨片×10（詩學兌換）+ 精金投斧×4（軍票5000/製作/市場）',
+          note: '需要：神秘骨片×10（詩學兌換）+ 堅鋼投斧×4（軍票5000/製作/市場）',
           subMaterials: [
             { id: 'unidentified_bone', name: '神秘骨片', quantity: 10, source: '詩學 150', tomestone: 150 },
-            { id: 'adamantite_francesca', name: '精金投斧', quantity: 4, source: '軍票 5000/製作/市場' }
+            { id: 'adamantite_francesca', name: '堅鋼投斧', quantity: 4, source: '軍票 5000/製作/市場' }
           ]
         },
         {
