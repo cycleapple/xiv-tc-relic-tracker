@@ -42,7 +42,7 @@ const ANIMA_DATA = {
           name: '流光之冰/土/水水晶',
           quantity: 1,
           source: 'FATE',
-          note: '冰：庫爾札斯西部高地\n土：德拉瓦尼亞儷地\n水：德拉瓦尼亞河谷地'
+          note: '冰：庫爾札斯西部高地\n土：德拉瓦尼亞山麓地\n水：德拉瓦尼亞河谷地'
         }
       ]
     },
@@ -174,7 +174,7 @@ const ANIMA_DATA = {
       materials: [
         {
           id: 'pneumite',
-          name: '晶化氣體',
+          name: '神秘結晶',
           quantity: 15,
           source: '詩學 100×15/A9s',
           tomestone: 1500,
