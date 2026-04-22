@@ -1,17 +1,17 @@
 // 魂武 (Anima Weapons) - HW 3.0
-// 元靈武器
+// 聖靈武器
 
 const ANIMA_DATA = {
   id: 'anima',
   name: '魂武',
-  fullName: '元靈武器',
+  fullName: '聖靈武器',
   version: '3.0',
-  description: '蒼天的伊修加爾德的元靈武器系列',
-  prerequisite: '前置任務：其名元靈武器',
+  description: '蒼天的伊修加爾德的聖靈武器系列',
+  prerequisite: '前置任務：其名聖靈武器',
   stages: [
     {
       id: 'animated',
-      name: '元靈+0 創造',
+      name: '聖靈+0 創造',
       ilvl: 170,
       quest: '創造新武器',
       description: '摩杜納 (X:23, Y:6) 2樓露台',
@@ -48,7 +48,7 @@ const ANIMA_DATA = {
     },
     {
       id: 'awoken',
-      name: '元靈+1 覺醒',
+      name: '聖靈+1 覺醒',
       ilvl: 200,
       quest: '英雄的軌跡',
       materials: [
@@ -57,9 +57,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'hyperconductive',
-      name: '元靈+2 新元靈',
+      name: '聖靈+2 新聖靈',
       ilvl: 210,
-      quest: '閃耀的元靈武器',
+      quest: '閃耀的聖靈武器',
       materials: [
         {
           id: 'enchanted_rubber',
@@ -109,9 +109,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'reconditioned',
-      name: '元靈+3 超導',
+      name: '聖靈+3 超導',
       ilvl: 230,
-      quest: '人造元靈的聲音',
+      quest: '人造聖靈的聲音',
       materials: [
         {
           id: 'aether_oil',
@@ -125,9 +125,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'sharpened',
-      name: '元靈+4 再生',
+      name: '聖靈+4 再生',
       ilvl: 240,
-      quest: '培育人造元靈',
+      quest: '培育人造聖靈',
       description: '烏蘭 田園郡 (X:6, Y:5)',
       materials: [
         {
@@ -151,9 +151,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'complete',
-      name: '元靈+5 靈慧',
+      name: '聖靈+5 靈慧',
       ilvl: 260,
-      quest: '人造元靈的未來',
+      quest: '人造聖靈的未來',
       materials: [
         {
           id: 'singing_cluster',
@@ -168,9 +168,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'bloom',
-      name: '元靈+5.5 終綻',
+      name: '聖靈+5.5 終綻',
       ilvl: 270,
-      quest: '人造元靈終綻放',
+      quest: '人造聖靈終綻放',
       materials: [
         {
           id: 'pneumite',
@@ -199,9 +199,9 @@ const ANIMA_DATA = {
     },
     {
       id: 'lux',
-      name: '元靈+6 光輝',
+      name: '聖靈+6 光輝',
       ilvl: 275,
-      quest: '誕生的瞬間',
+      quest: '人造聖靈搭檔',
       materials: [
         {
           id: 'archaic_ink',
